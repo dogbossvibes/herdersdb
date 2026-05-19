@@ -1,12 +1,5 @@
-import { useState } from "react";
-
-const dogs = [
-  { id: "1", name: "Arko van de Herdershof",  gender: "male",   born: "2021-03-12", color: "Gestromt Kurzhaar",  hd: "A1", coi: 3.2, country: "NL", titles: ["KNPV PH1", "IPO3"] },
-  { id: "2", name: "Bella vom Niederrhein",    gender: "female", born: "2020-07-08", color: "Gebrindelt Kurzhaar", hd: "B1", coi: 4.8, country: "DE", titles: ["IPO2"] },
-  { id: "3", name: "Cesar vd Zwarte Ruiter",   gender: "male",   born: "2019-11-22", color: "Gestromt Kurzhaar",  hd: "A2", coi: 2.1, country: "NL", titles: ["KNPV PH2", "IPO3"] },
-  { id: "4", name: "Diva van het Duinzand",    gender: "female", born: "2022-02-14", color: "Rauhhaar",            hd: "A1", coi: 5.6, country: "CH", titles: ["IPO1"] },
-  { id: "5", name: "Elvis van de Polderhoeve", gender: "male",   born: "2020-09-30", color: "Gestromt Kurzhaar",  hd: "A1", coi: 1.8, country: "BE", titles: ["KNPV PH1", "IPO3"] },
-];
+import { useState, useEffect } from "react";
+import { supabase } from "../supabase";
 
 const coiColor = (coi) => {
   if (coi < 3) return "#22c55e";
@@ -25,17 +18,52 @@ const coiBg = (coi) => {
 const font = "Inter, system-ui, sans-serif";
 
 export default function HundeListe() {
+  const [dogs, setDogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
   const [genderFilter, setGenderFilter] = useState("all");
 
+  useEffect(() => {
+    supabase.from("dogs").select("*").then(({ data, error }) => {
+      if (error) setFetchError(error.message);
+      else setDogs(data || []);
+      setLoading(false);
+    });
+  }, []);
+
   const filtered = dogs.filter((d) => {
-    const matchSearch = d.name.toLowerCase().includes(search.toLowerCase()) || d.country.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      (d.name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (d.country_of_birth || "").toLowerCase().includes(search.toLowerCase());
     const matchGender = genderFilter === "all" || d.gender === genderFilter;
     return matchSearch && matchGender;
   });
 
   const dog = dogs.find((d) => d.id === selected);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: font }}>
+        <div style={{ textAlign: "center", color: "#94a3b8" }}>
+          <div style={{ width: 36, height: 36, border: "3px solid #e2e8f0", borderTopColor: "#6366f1", borderRadius: "50%", animation: "spin 0.7s linear infinite", margin: "0 auto 14px" }} />
+          <div style={{ fontSize: 14, fontWeight: 600 }}>Lade Hunde...</div>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: font }}>
+        <div style={{ background: "#fef2f2", border: "1.5px solid #fecaca", borderRadius: 14, padding: "24px 32px", color: "#dc2626", fontSize: 14 }}>
+          Fehler beim Laden: {fetchError}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: font, color: "#1e293b", padding: "28px 32px" }}>
@@ -52,7 +80,7 @@ export default function HundeListe() {
           />
 
           <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-            {[["all", "Alle"], ["male", "Rueden"], ["female", "Huendinnen"]].map(([v, l]) => (
+            {[["all", "Alle"], ["Ruede (male)", "Rueden"], ["Hundin (female)", "Huendinnen"]].map(([v, l]) => (
               <button
                 key={v}
                 onClick={() => setGenderFilter(v)}
@@ -67,6 +95,10 @@ export default function HundeListe() {
             {filtered.length} {filtered.length === 1 ? "Hund" : "Hunde"}
           </div>
 
+          {filtered.length === 0 && (
+            <div style={{ textAlign: "center", padding: "32px 0", color: "#cbd5e1", fontSize: 13 }}>Keine Hunde gefunden</div>
+          )}
+
           {filtered.map((d) => (
             <div
               key={d.id}
@@ -75,18 +107,26 @@ export default function HundeListe() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a" }}>{d.country} · {d.name}</div>
-                  <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 3 }}>{d.color} · HD {d.hd}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a" }}>
+                    {d.country_of_birth && <span style={{ marginRight: 4 }}>{d.country_of_birth} ·</span>}{d.name}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 3 }}>
+                    {[d.coat_type, d.hd ? "HD " + d.hd : null].filter(Boolean).join(" · ")}
+                  </div>
                 </div>
-                <div style={{ background: coiBg(d.coi), borderRadius: 8, padding: "3px 9px", textAlign: "center", flexShrink: 0 }}>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: coiColor(d.coi) }}>COI {d.coi}%</div>
+                {d.coi_genomic != null && (
+                  <div style={{ background: coiBg(d.coi_genomic), borderRadius: 8, padding: "3px 9px", textAlign: "center", flexShrink: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: coiColor(d.coi_genomic) }}>COI {d.coi_genomic}%</div>
+                  </div>
+                )}
+              </div>
+              {d.titles && d.titles.length > 0 && (
+                <div style={{ marginTop: 10, display: "flex", gap: 5, flexWrap: "wrap" }}>
+                  {d.titles.map((t) => (
+                    <span key={t} style={{ background: "#f1f5f9", color: "#475569", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 99 }}>{t}</span>
+                  ))}
                 </div>
-              </div>
-              <div style={{ marginTop: 10, display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {d.titles.map((t) => (
-                  <span key={t} style={{ background: "#f1f5f9", color: "#475569", fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 99 }}>{t}</span>
-                ))}
-              </div>
+              )}
             </div>
           ))}
         </div>
@@ -104,32 +144,42 @@ export default function HundeListe() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, paddingBottom: 20, borderBottom: "1.5px solid #f1f5f9" }}>
                 <div>
                   <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>{dog.name}</div>
-                  <div style={{ color: "#94a3b8", fontSize: 13.5, marginTop: 4 }}>{dog.country} · {dog.color} · {dog.gender === "male" ? "Ruede" : "Hundin"}</div>
+                  <div style={{ color: "#94a3b8", fontSize: 13.5, marginTop: 4 }}>
+                    {[dog.country_of_birth, dog.coat_type, dog.gender === "Ruede (male)" ? "Ruede" : dog.gender === "Hundin (female)" ? "Hundin" : dog.gender].filter(Boolean).join(" · ")}
+                  </div>
                 </div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  {dog.titles.map((t) => (
-                    <span key={t} style={{ background: "#eef2ff", color: "#6366f1", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>{t}</span>
-                  ))}
-                </div>
+                {dog.titles && dog.titles.length > 0 && (
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    {dog.titles.map((t) => (
+                      <span key={t} style={{ background: "#eef2ff", color: "#6366f1", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>{t}</span>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div style={{ background: coiBg(dog.coi), border: "1.5px solid " + coiColor(dog.coi) + "33", borderRadius: 14, padding: "18px 20px", marginBottom: 20 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <span style={{ color: "#475569", fontWeight: 600, fontSize: 13 }}>Inzuchtkoeffizient (COI)</span>
-                  <span style={{ color: coiColor(dog.coi), fontWeight: 800, fontSize: 20 }}>{dog.coi}%</span>
+              {dog.coi_genomic != null && (
+                <div style={{ background: coiBg(dog.coi_genomic), border: "1.5px solid " + coiColor(dog.coi_genomic) + "33", borderRadius: 14, padding: "18px 20px", marginBottom: 20 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                    <span style={{ color: "#475569", fontWeight: 600, fontSize: 13 }}>Inzuchtkoeffizient (COI)</span>
+                    <span style={{ color: coiColor(dog.coi_genomic), fontWeight: 800, fontSize: 20 }}>{dog.coi_genomic}%</span>
+                  </div>
+                  <div style={{ background: "#e2e8f0", borderRadius: 99, height: 8, overflow: "hidden" }}>
+                    <div style={{ width: dog.coi_genomic + "%", background: coiColor(dog.coi_genomic), height: "100%", borderRadius: 99, transition: "width .4s ease" }} />
+                  </div>
                 </div>
-                <div style={{ background: "#e2e8f0", borderRadius: 99, height: 8, overflow: "hidden" }}>
-                  <div style={{ width: dog.coi + "%", background: coiColor(dog.coi), height: "100%", borderRadius: 99, transition: "width .4s ease" }} />
-                </div>
-              </div>
+              )}
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
-                  ["HD-Ergebnis", dog.hd],
-                  ["Geburtsjahr", new Date(dog.born).getFullYear()],
-                  ["Land", dog.country],
-                  ["Geschlecht", dog.gender === "male" ? "Ruede" : "Hundin"],
-                ].map(([k, v]) => (
+                  dog.hd            && ["HD-Ergebnis",  dog.hd],
+                  dog.date_of_birth && ["Geburtsjahr",  new Date(dog.date_of_birth).getFullYear()],
+                  dog.country_of_birth && ["Geburtsland", dog.country_of_birth],
+                  dog.gender        && ["Geschlecht",   dog.gender === "Ruede (male)" ? "Ruede" : dog.gender === "Hundin (female)" ? "Hundin" : dog.gender],
+                  dog.height_cm     && ["Groesse",      dog.height_cm + " cm"],
+                  dog.weight_kg     && ["Gewicht",      dog.weight_kg + " kg"],
+                  dog.registry_number && ["Zuchtbuch-Nr.", dog.registry_number],
+                  dog.chip_number   && ["Chip-Nr.",     dog.chip_number],
+                ].filter(Boolean).map(([k, v]) => (
                   <div key={k} style={{ background: "#f8fafc", border: "1.5px solid #f1f5f9", borderRadius: 12, padding: "14px 16px" }}>
                     <div style={{ fontSize: 11, color: "#94a3b8", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.04em" }}>{k}</div>
                     <div style={{ fontSize: 15, color: "#0f172a", fontWeight: 700, marginTop: 5 }}>{v}</div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../supabase";
 
 const SECTIONS = ["Grunddaten", "Stammbaum", "Gesundheit", "DNA", "Titel", "Besitzer"];
 
@@ -103,6 +104,28 @@ export default function HundImport() {
   const [form, setForm] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [openGen, setOpenGen] = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveError(null);
+    const { error } = await supabase.from("dogs").insert({
+      name:             form.name             || null,
+      gender:           form.gender           || null,
+      date_of_birth:    form.date_of_birth    || null,
+      coat_type:        form.coat_type        || null,
+      country_of_birth: form.country_of_birth || null,
+      chip_number:      form.chip_number      || null,
+      registry_number:  form.registry_number  || null,
+      registry_org:     form.registry_org     || null,
+      height_cm:        form.height_cm        ? Number(form.height_cm) : null,
+      weight_kg:        form.weight_kg        ? Number(form.weight_kg) : null,
+    });
+    setSaving(false);
+    if (error) { setSaveError(error.message); return; }
+    setSubmitted(true);
+  };
 
   const gen4 = buildGen4();
   const gen5 = buildGen5();
@@ -161,8 +184,8 @@ export default function HundImport() {
               ))}
             </div>
             <div style={{ marginTop:12 }}>
-              <button onClick={() => setSubmitted(true)} style={{ width:"100%", background:"#6366f1", border:"none", color:"#fff", borderRadius:12, padding:"13px", cursor:"pointer", fontSize:14, fontWeight:700, fontFamily:"Inter, system-ui, sans-serif", boxShadow:"0 4px 14px rgba(99,102,241,0.30)", transition:"opacity .15s" }}>
-                Speichern
+              <button onClick={handleSave} disabled={saving} style={{ width:"100%", background:"#6366f1", border:"none", color:"#fff", borderRadius:12, padding:"13px", cursor: saving ? "not-allowed" : "pointer", fontSize:14, fontWeight:700, fontFamily:"Inter, system-ui, sans-serif", boxShadow:"0 4px 14px rgba(99,102,241,0.30)", opacity: saving ? 0.7 : 1, transition:"opacity .15s" }}>
+                {saving ? "Speichert..." : "Speichern"}
               </button>
             </div>
           </div>
@@ -265,6 +288,11 @@ export default function HundImport() {
               </div>
             )}
 
+            {saveError && (
+              <div style={{ background:"#fef2f2", border:"1.5px solid #fecaca", borderRadius:10, padding:"10px 14px", marginBottom:10, fontSize:13, color:"#dc2626", fontFamily:"Inter, system-ui, sans-serif" }}>
+                Fehler: {saveError}
+              </div>
+            )}
             <div style={{ display:"flex", justifyContent:"space-between", marginTop:8 }}>
               <button onClick={() => setSection(Math.max(0, section-1))} disabled={section===0}
                 style={{ background:"#fff", border:"1.5px solid #e2e8f0", color: section===0 ? "#cbd5e1" : "#475569", borderRadius:10, padding:"9px 22px", cursor: section===0 ? "not-allowed" : "pointer", fontSize:13, fontWeight:600, fontFamily:"Inter, system-ui, sans-serif" }}>
@@ -272,7 +300,7 @@ export default function HundImport() {
               </button>
               {section < SECTIONS.length-1
                 ? <button onClick={() => setSection(section+1)} style={{ background:"#6366f1", border:"none", color:"#fff", borderRadius:10, padding:"9px 24px", cursor:"pointer", fontSize:13, fontWeight:700, fontFamily:"Inter, system-ui, sans-serif", boxShadow:"0 4px 14px rgba(99,102,241,0.30)" }}>Weiter →</button>
-                : <button onClick={() => setSubmitted(true)} style={{ background:"#6366f1", border:"none", color:"#fff", borderRadius:10, padding:"9px 24px", cursor:"pointer", fontSize:13, fontWeight:700, fontFamily:"Inter, system-ui, sans-serif", boxShadow:"0 4px 14px rgba(99,102,241,0.30)" }}>Hund speichern</button>
+                : <button onClick={handleSave} disabled={saving} style={{ background:"#6366f1", border:"none", color:"#fff", borderRadius:10, padding:"9px 24px", cursor: saving ? "not-allowed" : "pointer", fontSize:13, fontWeight:700, fontFamily:"Inter, system-ui, sans-serif", boxShadow:"0 4px 14px rgba(99,102,241,0.30)", opacity: saving ? 0.7 : 1 }}>{saving ? "Speichert..." : "Hund speichern"}</button>
               }
             </div>
 
