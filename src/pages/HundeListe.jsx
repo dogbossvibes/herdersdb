@@ -80,7 +80,7 @@ export default function HundeListe() {
           />
 
           <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-            {[["all", "Alle"], ["Ruede (male)", "Rueden"], ["Hundin (female)", "Huendinnen"]].map(([v, l]) => (
+            {[["all", "Alle"], ["male", "Rueden"], ["female", "Huendinnen"]].map(([v, l]) => (
               <button
                 key={v}
                 onClick={() => setGenderFilter(v)}
@@ -145,7 +145,7 @@ export default function HundeListe() {
                 <div>
                   <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>{dog.name}</div>
                   <div style={{ color: "#94a3b8", fontSize: 13.5, marginTop: 4 }}>
-                    {[dog.country_of_birth, dog.coat_type, dog.gender === "Ruede (male)" ? "Ruede" : dog.gender === "Hundin (female)" ? "Hundin" : dog.gender].filter(Boolean).join(" · ")}
+                    {[dog.country_of_birth, dog.coat_type, dog.gender === "male" ? "Rüde" : dog.gender === "female" ? "Hündin" : dog.gender].filter(Boolean).join(" · ")}
                   </div>
                 </div>
                 {dog.titles && dog.titles.length > 0 && (
@@ -174,7 +174,7 @@ export default function HundeListe() {
                   dog.hd            && ["HD-Ergebnis",  dog.hd],
                   dog.date_of_birth && ["Geburtsjahr",  new Date(dog.date_of_birth).getFullYear()],
                   dog.country_of_birth && ["Geburtsland", dog.country_of_birth],
-                  dog.gender        && ["Geschlecht",   dog.gender === "Ruede (male)" ? "Ruede" : dog.gender === "Hundin (female)" ? "Hundin" : dog.gender],
+                  dog.gender        && ["Geschlecht",   dog.gender === "male" ? "Rüde" : dog.gender === "female" ? "Hündin" : dog.gender],
                   dog.height_cm     && ["Groesse",      dog.height_cm + " cm"],
                   dog.weight_kg     && ["Gewicht",      dog.weight_kg + " kg"],
                   dog.registry_number && ["Zuchtbuch-Nr.", dog.registry_number],

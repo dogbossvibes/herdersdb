@@ -89,7 +89,11 @@ function Field({ f, form, set }) {
       <label style={lbl}>{f.label}</label>
       {f.type === "select"
         ? <select value={form[f.key]||""} onChange={e => set(f.key, e.target.value)} style={sel}>
-            {f.options.map(o => <option key={o} value={o}>{o||"– bitte waehlen –"}</option>)}
+            {f.options.map(o => {
+              const val = typeof o === "object" ? o.value : o;
+              const label = typeof o === "object" ? o.label : (o || "– bitte waehlen –");
+              return <option key={val} value={val}>{label || "– bitte waehlen –"}</option>;
+            })}
           </select>
         : f.type === "textarea"
           ? <textarea value={form[f.key]||""} onChange={e => set(f.key, e.target.value)} placeholder={f.placeholder||""} rows={3} style={{...inp, resize:"vertical"}} />
@@ -198,7 +202,7 @@ export default function HundImport() {
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 24px" }}>
                   {[
                     { key:"name",                label:"Vollstaendiger Name *",  full:true, placeholder:"z.B. Arko van de Herdershof" },
-                    { key:"gender",              label:"Geschlecht *",           type:"select", options:["","Ruede (male)","Hundin (female)"] },
+                    { key:"gender",              label:"Geschlecht *",           type:"select", options:[{value:"",label:""},{value:"male",label:"Rüde"},{value:"female",label:"Hündin"}] },
                     { key:"date_of_birth",       label:"Geburtsdatum *",         type:"date" },
                     { key:"coat_type",           label:"Haartyp *",              type:"select", options:["","Kurzhaar","Langhaar","Rauhhaar"] },
                     { key:"country_of_birth",    label:"Geburtsland *",          type:"select", options:["","NL","DE","CH","BE","FR","PL","CZ","US","UK","andere"] },
