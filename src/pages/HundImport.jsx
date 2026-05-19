@@ -204,7 +204,7 @@ export default function HundImport() {
                     { key:"name",                label:"Vollstaendiger Name *",  full:true, placeholder:"z.B. Arko van de Herdershof" },
                     { key:"gender",              label:"Geschlecht *",           type:"select", options:[{value:"",label:""},{value:"male",label:"Rüde"},{value:"female",label:"Hündin"}] },
                     { key:"date_of_birth",       label:"Geburtsdatum *",         type:"date" },
-                    { key:"coat_type",           label:"Haartyp *",              type:"select", options:["","Kurzhaar","Langhaar","Rauhhaar"] },
+                    { key:"coat_type",           label:"Haartyp *",              type:"select", options:["","short","long","rough"] },
                     { key:"country_of_birth",    label:"Geburtsland *",          type:"select", options:["","NL","DE","CH","BE","FR","PL","CZ","US","UK","andere"] },
                     { key:"country_of_residence",label:"Aktuelles Wohnland",     type:"select", options:["","NL","DE","CH","BE","FR","PL","CZ","US","UK","andere"] },
                     { key:"chip_number",         label:"Chip-Nummer",            placeholder:"756098100012345" },
