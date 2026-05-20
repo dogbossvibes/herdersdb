@@ -211,15 +211,13 @@ export default function HundeListe() {
 
           {dog && !editing && (
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, paddingBottom: 20, borderBottom: "1.5px solid #f1f5f9" }}>
-                <div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>{dog.name}</div>
-                  <div style={{ color: "#94a3b8", fontSize: 13.5, marginTop: 4 }}>
-                    {[dog.country_of_birth, dog.coat_type, dog.gender === "male" ? "Rüde" : dog.gender === "female" ? "Hündin" : dog.gender].filter(Boolean).join(" · ")}
-                  </div>
+              <div style={{ marginBottom: 20, paddingBottom: 20, borderBottom: "1.5px solid #f1f5f9" }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>{dog.name}</div>
+                <div style={{ color: "#94a3b8", fontSize: 13.5, marginTop: 4, marginBottom: 16 }}>
+                  {[dog.country_of_birth, dog.coat_type, dog.gender === "male" ? "Rüde" : dog.gender === "female" ? "Hündin" : dog.gender].filter(Boolean).join(" · ")}
                 </div>
                 <button onClick={handleEdit}
-                  style={{ background: "#6366f1", border: "none", color: "#fff", borderRadius: 10, padding: "9px 20px", cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: font, boxShadow: "0 4px 14px rgba(99,102,241,0.30)" }}>
+                  style={{ background: "#3b82f6", border: "none", color: "#fff", borderRadius: 10, padding: "11px 28px", cursor: "pointer", fontSize: 14, fontWeight: 700, fontFamily: font, boxShadow: "0 4px 16px rgba(59,130,246,0.35)" }}>
                   Bearbeiten
                 </button>
               </div>
