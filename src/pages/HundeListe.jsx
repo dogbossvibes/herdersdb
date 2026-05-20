@@ -219,7 +219,7 @@ export default function HundeListe() {
                   </div>
                 </div>
                 <button onClick={handleEdit}
-                  style={{ background: "#f8fafc", border: "1.5px solid #e2e8f0", color: "#475569", borderRadius: 10, padding: "8px 18px", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: font }}>
+                  style={{ background: "#6366f1", border: "none", color: "#fff", borderRadius: 10, padding: "9px 20px", cursor: "pointer", fontSize: 13, fontWeight: 700, fontFamily: font, boxShadow: "0 4px 14px rgba(99,102,241,0.30)" }}>
                   Bearbeiten
                 </button>
               </div>
