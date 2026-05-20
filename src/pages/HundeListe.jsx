@@ -270,49 +270,41 @@ export default function HundeListe() {
                 ))}
               </div>
 
-              <InfoSection title="Stammbaum" rows={[
-                ["Vater (Sire)",            dog.sire_name],
-                ["Vater Reg.-Nr.",          dog.sire_reg],
-                ["Mutter (Dam)",            dog.dam_name],
-                ["Mutter Reg.-Nr.",         dog.dam_reg],
-                ["PP (Vater des Vaters)",   dog.sire_sire_name],
-                ["PM (Mutter des Vaters)",  dog.sire_dam_name],
-                ["MP (Vater der Mutter)",   dog.dam_sire_name],
-                ["MM (Mutter der Mutter)",  dog.dam_dam_name],
-              ]} />
-
               <InfoSection title="Gesundheit" rows={[
-                ["HD",                dog.hd],
-                ["ED",                dog.ed],
-                ["Augen (CAER)",      dog.augen],
-                ["Herz",              dog.herz],
-                ["Untersuchungsdatum",dog.health_date],
-                ["Tierarzt / Klinik", dog.health_vet],
+                ["HD",                 dog.hd],
+                ["ED",                 dog.ed],
+                ["Augen (CAER)",       dog.augen],
+                ["Herz",               dog.herz],
+                ["Untersuchungsdatum", dog.health_date],
+                ["Tierarzt / Klinik",  dog.health_vet],
               ]} />
 
               <InfoSection title="DNA" rows={[
-                ["MDR1",              dog.mdr1],
-                ["Deg. Myelopathie",  dog.dew],
-                ["Farbgenetik",       dog.farbe],
-                ["Labor",             dog.dna_labor],
-                ["Testdatum",         dog.dna_date],
-                ["COI genomisch (%)", dog.coi_genomic],
+                ["MDR1",               dog.mdr1],
+                ["Deg. Myelopathie",   dog.dew],
+                ["Labor",              dog.dna_labor],
+                ["Testdatum",          dog.dna_date],
+                ["COI genomisch (%)",  dog.coi_genomic],
               ]} />
 
-              <InfoSection title="Titel & Prüfungen" rows={[
-                ["Schutzdienst",         dog.schutzdienst],
-                ["Fährte",               dog.faehrte],
-                ["Obedience",            dog.obedience],
-                ["Weitere",              dog.sport],
-                ["Zuchteignungsprüfung", dog.zuchteigung],
+              <InfoSection title="Titel" rows={[
+                ["Schutzdienst",       dog.schutzdienst],
+                ["Fährte",             dog.faehrte],
+                ["Obedience",          dog.obedience],
+                ["Weitere",            dog.sport],
+                ["Zuchteignung",       dog.zuchteigung],
               ]} />
 
-              <InfoSection title="Besitzer & Züchter" rows={[
-                ["Besitzer",        dog.owner],
-                ["Züchter",         dog.breeder],
-                ["Zwingername",     dog.kennel],
-                ["Zuchtzulassung",  dog.breeding_approved],
-                ["Working-dog URL", dog.workingdog_url],
+              <InfoSection title="Stammbaum" rows={[
+                ["Vater",              dog.sire_name],
+                ["Mutter",             dog.dam_name],
+              ]} />
+
+              <InfoSection title="Besitzer" rows={[
+                ["Besitzer",           dog.owner],
+                ["Züchter",            dog.breeder],
+                ["Zwingername",        dog.kennel],
+                ["Working-dog URL",    dog.workingdog_url],
               ]} />
 
             </div>
