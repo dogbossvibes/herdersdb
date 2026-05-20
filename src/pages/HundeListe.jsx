@@ -21,6 +21,24 @@ const inp = { width: "100%", background: "#fff", border: "1.5px solid #e2e8f0", 
 const sel = { ...inp, appearance: "none", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 14px center" };
 const lbl = { fontSize: 11, color: "#64748b", display: "block", marginBottom: 5, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: font };
 
+function InfoSection({ title, rows }) {
+  const filled = rows.filter(([, v]) => v != null && v !== "" && v !== false);
+  if (filled.length === 0) return null;
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>{title}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {filled.map(([k, v]) => (
+          <div key={k} style={{ background: "#f8fafc", border: "1.5px solid #f1f5f9", borderRadius: 12, padding: "12px 14px" }}>
+            <div style={{ fontSize: 10.5, color: "#94a3b8", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.04em" }}>{k}</div>
+            <div style={{ fontSize: 14, color: "#0f172a", fontWeight: 600, marginTop: 4, wordBreak: "break-word" }}>{v}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const EDIT_FIELDS = [
   { key: "name",             label: "Vollständiger Name",  full: true },
   { key: "gender",           label: "Geschlecht",          type: "select", options: [{ value: "", label: "" }, { value: "male", label: "Rüde" }, { value: "female", label: "Hündin" }] },
@@ -251,6 +269,52 @@ export default function HundeListe() {
                   </div>
                 ))}
               </div>
+
+              <InfoSection title="Stammbaum" rows={[
+                ["Vater (Sire)",            dog.sire_name],
+                ["Vater Reg.-Nr.",          dog.sire_reg],
+                ["Mutter (Dam)",            dog.dam_name],
+                ["Mutter Reg.-Nr.",         dog.dam_reg],
+                ["PP (Vater des Vaters)",   dog.sire_sire_name],
+                ["PM (Mutter des Vaters)",  dog.sire_dam_name],
+                ["MP (Vater der Mutter)",   dog.dam_sire_name],
+                ["MM (Mutter der Mutter)",  dog.dam_dam_name],
+              ]} />
+
+              <InfoSection title="Gesundheit" rows={[
+                ["HD",                dog.hd],
+                ["ED",                dog.ed],
+                ["Augen (CAER)",      dog.augen],
+                ["Herz",              dog.herz],
+                ["Untersuchungsdatum",dog.health_date],
+                ["Tierarzt / Klinik", dog.health_vet],
+              ]} />
+
+              <InfoSection title="DNA" rows={[
+                ["MDR1",              dog.mdr1],
+                ["Deg. Myelopathie",  dog.dew],
+                ["Farbgenetik",       dog.farbe],
+                ["Labor",             dog.dna_labor],
+                ["Testdatum",         dog.dna_date],
+                ["COI genomisch (%)", dog.coi_genomic],
+              ]} />
+
+              <InfoSection title="Titel & Prüfungen" rows={[
+                ["Schutzdienst",         dog.schutzdienst],
+                ["Fährte",               dog.faehrte],
+                ["Obedience",            dog.obedience],
+                ["Weitere",              dog.sport],
+                ["Zuchteignungsprüfung", dog.zuchteigung],
+              ]} />
+
+              <InfoSection title="Besitzer & Züchter" rows={[
+                ["Besitzer",        dog.owner],
+                ["Züchter",         dog.breeder],
+                ["Zwingername",     dog.kennel],
+                ["Zuchtzulassung",  dog.breeding_approved],
+                ["Working-dog URL", dog.workingdog_url],
+              ]} />
+
             </div>
           )}
 
